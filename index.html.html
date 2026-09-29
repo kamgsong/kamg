@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>매출 대시보드</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#687386;--line:#e6eaf0;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Noto Sans KR",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 36px}
+header{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:20px}
+h1{font-size:26px;margin:0 0 5px} .sub{color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 3px 14px rgba(20,30,50,.04)}
+.label{color:var(--muted);font-size:13px;margin-bottom:8px} .value{font-size:28px;font-weight:750;letter-spacing:-.5px}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 3px 14px rgba(20,30,50,.04)}
+.panel h2{font-size:17px;margin:0 0 16px} .chartbox{height:330px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:600;background:#fafbfc;position:sticky;top:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:700px){
+ .wrap{padding:18px 12px 28px} header{display:block} h1{font-size:22px}
+ .cards{grid-template-columns:1fr;gap:10px} .card{padding:16px} .value{font-size:24px}
+ .panel{padding:15px;border-radius:14px} .chartbox{height:260px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>매출 대시보드</h1><div class="sub">첨부 CSV 실제 데이터 · 45개 행</div></div>
+  <div class="sub">2026-01 ~ 2026-09</div>
+</header>
+
+<section class="cards">
+  <div class="card"><div class="label">총매출</div><div class="value">878,000,000원</div></div>
+  <div class="card"><div class="label">총이익</div><div class="value">407,500,000원</div></div>
+  <div class="card"><div class="label">마진율</div><div class="value">46.4%</div></div>
+</section>
+
+<section class="grid">
+  <div class="panel">
+    <h2>월별 매출 추이</h2>
+    <div class="chartbox"><canvas id="salesChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <h2>상품별 매출</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>상품명</th><th>카테고리</th><th class="num">매출액</th><th class="num">이익</th><th class="num">마진율</th></tr></thead>
+        <tbody><tr><td>베스트 패딩</td><td>패션</td><td class='num'>270,000,000원</td><td class='num'>126,000,000원</td><td class='num'>46.7%</td></tr>
+<tr><td>스니커즈</td><td>신발</td><td class='num'>205,000,000원</td><td class='num'>93,500,000원</td><td class='num'>45.6%</td></tr>
+<tr><td>스킨케어 세트</td><td>뷰티</td><td class='num'>178,000,000원</td><td class='num'>84,500,000원</td><td class='num'>47.5%</td></tr>
+<tr><td>캠핑 백팩</td><td>레저</td><td class='num'>126,000,000원</td><td class='num'>58,500,000원</td><td class='num'>46.4%</td></tr>
+<tr><td>홈 스테이션</td><td>디지털</td><td class='num'>99,000,000원</td><td class='num'>45,000,000원</td><td class='num'>45.5%</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</div>
+<script>
+const monthly = [{"월": "2026-01", "매출액": 72000000}, {"월": "2026-02", "매출액": 78000000}, {"월": "2026-03", "매출액": 86000000}, {"월": "2026-04", "매출액": 92000000}, {"월": "2026-05", "매출액": 98000000}, {"월": "2026-06", "매출액": 104000000}, {"월": "2026-07", "매출액": 110000000}, {"월": "2026-08", "매출액": 116000000}, {"월": "2026-09", "매출액": 122000000}];
+new Chart(document.getElementById('salesChart'), {
+  type:'line',
+  data:{
+    labels:monthly.map(d=>d['월']),
+    datasets:[{
+      label:'매출액',
+      data:monthly.map(d=>d['매출액']),
+      tension:.3,
+      fill:true,
+      borderWidth:2,
+      pointRadius:3
+    }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>new Intl.NumberFormat('ko-KR').format(c.raw)+'원'}}},
+    scales:{y:{beginAtZero:true,ticks:{callback:v=>new Intl.NumberFormat('ko-KR',{notation:'compact'}).format(v)}},x:{grid:{display:false}}}
+  }
+});
+</script>
+</body>
+</html>
